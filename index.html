@@ -1,0 +1,1325 @@
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>Navin's Home 360 Virtual Tour</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <style>
+
+#rotateOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0a0a0a;
+  color: #fff;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100000;
+  flex-direction: column;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+#rotateOverlay img {
+  max-width: 300px; 
+  width: 50vw;
+  height: auto;
+  margin-bottom: 24px;
+  animation: breathe 3s ease-in-out infinite;
+}
+
+#rotateOverlay span {
+  font-size: 45px; 
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+@media only screen and (orientation: portrait) {
+  #rotateOverlay {
+    display: flex;
+  }
+}
+
+@media screen and (orientation: portrait) {
+  #rotateWarning {
+    display: block;
+  }
+}
+
+@media screen and (orientation: landscape) {
+  #rotateWarning {
+    display: none;
+  }
+}
+
+/* Scrollable and hidden scrollbar container */
+#scene-menu {
+    position: absolute;           /* Ensures it stays in place while scrolling */
+    top: 40px;                 /* Optional: position from top */
+    right: 30px;  
+
+    max-height: 90vh;
+    overflow-y: auto;
+    padding-right: 45px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    font-family: 'Poppins', sans-serif;
+    z-index: 10000;  
+
+    
+}
+#scene-menu::-webkit-scrollbar {
+    display: none;
+}
+
+/* Each scene item */
+#scene-menu div {
+    margin: 14px 0;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#scene-menu div:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+/* Enlarged and styled thumbnails */
+#scene-menu img {
+    width: 10px;
+    height: 105px;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto 6px;
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.444);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Label text */
+#scene-menu div span {
+    display: block;
+    margin-top: 2px;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    letter-spacing: 0.5px;
+}
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      #panorama {
+        width: 100%;
+        height: 100vh;
+      }
+
+      /* Custom hotspot icon */
+       .custom-icon {
+        background-image: url("1.png");
+        background-size: cover;
+        width: 63px;
+        height: 63px;
+        border-radius: 50%;
+      }
+      
+       .custom-icon-1  {
+        background-image: url("2.png");
+        background-size: cover;
+        width: 63px;
+        height: 63px;
+        border-radius: 50%;
+      }
+
+      .pnlm-context-menu {
+        display: none !important;
+      }
+
+      .pnlm-load-box{
+        display: none  !important;
+      }
+
+      .pnlm-about-msg {
+    display: none !important;
+      }
+
+/* Message in scene1 */
+
+#scene1InfoBox {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: none;
+}
+
+#scene1InfoBox .info-content {
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 16px;
+  padding: 20px 30px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  animation: fadeIn 0.5s ease;
+}
+
+#scene1InfoBox .info-content img {
+  width: 63px;
+  height: 63px;
+  margin-bottom: -10 px;
+}
+
+#scene1InfoBox .info-content p {
+  margin: 10px 0 20px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+#scene1InfoBox .info-content button {
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#scene1InfoBox .info-content button:hover {
+  background: sandybrown;
+}
+
+ #controls {
+        position: absolute;
+        bottom: 0;
+        z-index: 2;
+        text-align: center;
+        width: 100%;
+        padding-bottom: 3px;
+        pointer-events: none;
+    }
+    .ctrl {
+        padding: 8px 5px;
+        width: 30px;
+        text-align: center;
+        background: rgba(200, 200, 200, 0.8);
+        display: inline-block;
+        cursor: pointer;
+        pointer-events: auto;
+    }
+    .ctrl:hover {
+        background: rgba(200, 200, 200, 1);
+    }
+
+#panorama canvas {
+  image-rendering: auto; /* or crisp-edges for pixel-art style */
+}
+
+.hotspot_1 {
+  width: 63px;
+  height: 63px;
+  background-image: url('hotspot/arrow_up.gif');
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+}
+.hotspot_2{
+  width: 63px;
+  height: 63px;
+  background-image: url('hotspot/arrow_left.gif');
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+}
+.hotspot_5 {
+  width: 63px;
+  height: 63px;
+  background-image: url('hotspot/arrow_right_up.gif');
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+}
+.hotspot_7 {
+  width: 63px;
+  height: 63px;
+  background-image: url('hotspot/arrow_left_up.gif');
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+}
+
+#panorama:fullscreen .nav-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.nav-button {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    padding: 12px 24px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #000000, #000000);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 9999;
+}
+
+.nav-button:hover {
+    background: linear-gradient(135deg, #d7fba6, #8d9659);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.847);
+    transform: translateY(-2px);
+}
+
+    </style>
+  </head>
+  <body >
+
+<div id="panorama">
+    <div id="controls">
+        <div class="ctrl" id="pan-up">&#9650;</div>
+        <div class="ctrl" id="pan-down">&#9660;</div>
+        <div class="ctrl" id="pan-left">&#9664;</div>
+        <div class="ctrl" id="pan-right">&#9654;</div>
+        <div class="ctrl" id="zoom-in">&plus;</div>
+        <div class="ctrl" id="zoom-out">&minus;</div>
+        <div class="ctrl" id="fullscreen">&#x2922;</div>
+    </div>
+</div>
+
+<div id="panorama">
+    <button class="nav-button" onclick="window.location.href='https://vishal-aravind.github.io/Navins-clubhouse/'">
+        Go to Clubhouse
+    </button>
+</div>
+
+ <!-- Message box in scene 1-->
+<div id="scene1InfoBox">
+  <div class="info-content">
+    <img src="hotspot/arrow_up.gif" alt="Hotspot">
+    <p>Click the arrow to move</p>
+    <button onclick="dismissInfo()">OK</button>
+  </div>
+</div>
+
+<div id="scene-menu" style="position:absolute; top:50px; right:20px; z-index:999;">
+  <div onclick="viewer.loadScene('Living_Hall')">
+    <img src="image/Hall.jpg" style="width:120px; display:block;"><span>Living Hall</span>
+  </div>
+  <div onclick="viewer.loadScene('Balcony')">
+    <img src="image/Balcony.jpg" style="width:120px; display:block;"><span>Balcony</span>
+  </div>
+  <div onclick="viewer.loadScene('Bedroom_1')">
+    <img src="image/Bedroom1.jpg" style="width:120px; display:block;"><span>Bedroom 1</span>
+  </div>
+  <div onclick="viewer.loadScene('Bathroom_1')">
+    <img src="image/Bathroom1.jpg" style="width:120px; display:block;"><span>Bathroom 1</span>
+  </div>
+    <div onclick="viewer.loadScene('Bathroom_2')">
+    <img src="image/Bathroom2.jpg" style="width:120px; display:block;"><span>Bathroom 2</span>
+  </div>
+  <div onclick="viewer.loadScene('Dining')">
+    <img src="image/Dining.jpg" style="width:120px; display:block;"><span>Dining</span>
+  </div>
+  <div onclick="viewer.loadScene('Kitchen')">
+    <img src="image/Kitchen.jpg" style="width:120px; display:block;"><span>Kitchen</span>
+  </div>
+    <div onclick="viewer.loadScene('Lounge')">
+    <img src="image/Lounge.jpg" style="width:120px; display:block;"><span>Lounge</span>
+  </div>
+  <div onclick="viewer.loadScene('Bedroom_2')">
+    <img src="image/Bedroom2.jpg" style="width:120px; display:block;"><span>Bedroom 2</span>
+  </div>
+  <div onclick="viewer.loadScene('Bedroom_3')">
+    <img src="image/Bedroom3.jpg" style="width:120px; display:block;"><span>Bedroom 3</span>
+  </div>
+  <div onclick="viewer.loadScene('Bathroom_3')">
+    <img src="image/Bathroom3.jpg" style="width:120px; display:block;"><span>Bathroom 3</span>
+  </div>
+</div>
+
+<!--Safari-->
+<div id="orientationOverlay" style="
+  display: none;
+  position: fixed;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+">
+  <img src="rotate.png" alt="Rotate Device" style="max-width: 300px;width: 50vw;height: auto; margin-bottom: 24px; animation: breathe 3s ease-in-out infinite">
+  <p>Please rotate your device to landscape mode</p>
+</div>
+
+    <!-- Viewer Container -->
+    <div id="panorama"></div>
+
+    <!-- Script Section -->
+    <script>
+      let viewer;
+
+function logoTooltip(hotSpotDiv, args) {
+const img = document.createElement("img");
+img.src = args.imageUrl;
+img.style.width = "630px";
+img.style.height = "auto";
+hotSpotDiv.appendChild(img);
+}
+
+//Message box in scene 1
+let outdoor1InfoShown = false;
+let outdoor1InfoDismissed = false;   // Global flag
+
+//Message box in scene 1
+function dismissInfo() {
+  document.getElementById('scene1InfoBox').style.display = 'none';
+  outdoor1InfoShown = true;  // Set flag to true so it won't show again
+}
+ 
+function loadSceneById(id) {
+  if (viewer) {
+    viewer.loadScene(id);
+    // Message box in scene 1
+    if (id == 'Living_Hall' && !outdoor1InfoShown) {
+      document.getElementById('scene1InfoBox').style.display = 'block';
+    }
+  }
+}
+
+      viewer = pannellum.viewer('panorama', {
+        "default": {
+          "firstScene": "Living_Hall",
+          "sceneFadeDuration": 1000,
+          "autoLoad": true,
+          "showControls":false,
+          "autoRotate":-3,
+          // hotSpotDebug:true,  
+        },
+        "scenes": {
+          "Living_Hall": {
+            "title": "Living Hall",
+            "panorama": "image/Hall.jpg",
+            "yaw": 113,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+                "pitch": -19.61,
+                "yaw": 152.87,
+                "Centre Pitch": 13,
+                "Centre Yaw": 175,
+                "type": "scene",
+                "text": "Go to Bedroom 1",
+                "sceneId": "Bedroom_1",
+                "cssClass": "hotspot_5"
+              },
+              {
+                "pitch": -20.27,
+                "yaw": 126.67,  
+                "type": "scene",
+                "text": "Balcony",
+                "sceneId": "Balcony",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -28.66,
+                "yaw": 51.66,
+                "Centre Pitch": 13,
+                "Centre Yaw": 175,
+                "type": "scene",
+                "text": "Go to Corridor 1",
+                "sceneId": "Corridor_1",
+                "cssClass": "hotspot_7"
+              },
+              {
+                "pitch": -85,
+                "yaw": 84,
+                "Centre Pitch":-72,
+                "Centre Yaw":174,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png"
+                 }
+              }
+            ]
+          },
+          "Bedroom_1": {
+            "title": "Bedroom 1",
+            "panorama": "image/Bedroom1.jpg",
+            "yaw": 180,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              { 
+                "pitch": -28.01,
+                "yaw": -91.38,
+                "type": "scene",
+                "text": "Go to Bathroom 1",
+                "sceneId": "Bathroom_1",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -43.86,
+                "yaw": 17.7,
+                "targetYaw":90,
+                "targetPitch":-2,
+                "type": "scene",
+                "text": "Back to Hall",
+                "sceneId": "Living_Hall",
+                "cssClass": "hotspot_7"
+              },
+              {
+                "pitch": -88,
+                "yaw": 119,
+                "Centre Pitch":-75,
+                "Centre Yaw":331,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png"
+                 }
+              }
+            ]
+          },
+          "Bathroom_1": {
+            "title": "Bathroom 1",
+            "panorama": "image/Bathroom1.jpg",
+            "yaw": -11,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+                "pitch": -21.74,
+                "yaw": 172.96,
+                "Centre Pitch": -9,
+                "Centre Yaw": 39.75,
+                "type": "scene",
+                "text": "Back to Bedroom 1",
+                "sceneId": "Bedroom_1",
+                "targetYaw":84,
+                "targetPitch":-2,
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl:"NavinsLogo.png"
+                 }
+              }
+            ]
+          },
+          "Balcony": {
+            "title": "Balcony",
+            "panorama": "image/Balcony.jpg",
+            "yaw": 162,
+            "pitch": -2,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+                "pitch": -39.55,
+                "yaw": -31.95,
+                "Centre Pitch": 1,
+                "Centre Yaw": 129,
+                "type": "scene",
+                "text": "Back to Hall",
+                "sceneId": "Living_Hall",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -93,
+                "yaw": 3,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png"
+                 }
+              }
+            ]
+          },
+          "Corridor_1": {
+            "title": "Corridor 1",
+            "panorama": "image/Path1.jpg",
+            "yaw": 92,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+              "pitch": -39.16,
+                "yaw": -3.46,
+                "Centre Pitch": -24,
+                "Centre Yaw": 346,
+                "type": "scene",
+                "text": "Go to Bathroom 2",
+                "sceneId": "Bathroom_2",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -27,
+                "yaw": 89.71,
+                "Centre Pitch": -3,
+                "Centre Yaw": 164,
+                "type": "scene",
+                "text": "Go to Corridor 2",
+                "sceneId": "Corridor_2",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -30.80,
+                "yaw": -73.83,
+                "Centre Pitch": -3,
+                "Centre Yaw": 164,
+                "type": "scene",
+                "text": "Back to Hall",
+                "sceneId": "Living_Hall",
+                "cssClass": "hotspot_5"
+              },
+              {
+                "pitch": -99,
+                "yaw": 3,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                  imageUrl: "NavinsLogo.png"
+                  }
+               }
+            ]
+          },
+          "Bathroom_2": {
+            "title": "Bathroom 2",
+            "panorama": "image/Bathroom2.jpg",
+            "yaw": 163,
+            "pitch": -7,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+                "pitch": -37.79,
+                "yaw": -86.41,
+                "Centre Pitch": -12,
+                "Centre Yaw": 241,
+                "type": "scene",
+                "text": "Back to Corridor 1",
+                "sceneId": "Corridor_1",    
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png"
+                 }
+              }
+            ]
+          },
+          "Corridor_2": {
+            "title": "Corridor 2",
+            "panorama": "image/Path2.jpg",
+            "yaw": 15,
+            "pitch":-5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+                "pitch": -19.76,
+                "yaw": 98.18,
+                "Centre Pitch": 0,
+                "Centre Yaw": 29,
+                "type": "scene",
+                "text": "Go to Kitchen",
+                "sceneId": "Kitchen",
+                "cssClass": "hotspot_1"
+              },
+              {
+               "pitch": -22.79,
+                "yaw": 5.83,
+                "Centre Pitch": -2,
+                "Centre Yaw": 210,
+                "type": "scene",
+                "text": "Go to Corriodr 3",
+                "sceneId": "Corridor_3",
+                "cssClass": "hotspot_1"
+              },
+               {
+               "pitch": -29.88,
+                "yaw": -176.07,
+                "Centre Pitch": -2,
+                "Centre Yaw": 210,
+                "type": "scene",
+                "text": "Back to Corridor 1",
+                "sceneId": "Corridor_1",
+                "targetYaw":270,
+                "targetPitch":-5,
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png"
+                 }
+              }
+            ]
+          },
+           "Corridor_3": {
+            "title": "Corridor 3",
+            "panorama": "image/Path3.jpg",
+            "yaw": -95,
+            "pitch":-5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+                "pitch": -34.67,
+                "yaw": -122.36,
+                "Centre Pitch": 0,
+                "Centre Yaw": 29,
+                "type": "scene",
+                "text": "Go to Lounge",
+                "sceneId": "Lounge",
+                "cssClass": "hotspot_7"
+              },
+              {
+                "pitch": -32.15,
+                "yaw": -84.29,
+                "Centre Pitch": 0,
+                "Centre Yaw": 29,
+                "type": "scene",
+                "text": "Go to Bedroom 2",
+                "sceneId": "Bedroom_2",
+                "cssClass": "hotspot_5"
+              },
+              {
+                "pitch": -33.15,
+                "yaw": 30.26,
+                "type": "scene",
+                "text": "Go to Dining",
+                "sceneId": "Dining",
+                "cssClass": "hotspot_2"
+              },
+              {
+                "pitch": -16.05,
+                "yaw": -98.42,
+                "Centre Pitch": 0,
+                "Centre Yaw": 29,
+                "type": "scene",
+                "text": "Go to Corridor 4",
+                "sceneId": "Corridor_4",
+                "cssClass": "hotspot_1"
+              },
+              {
+               "pitch": -24,
+                "yaw": 81.50,
+                "type": "scene",
+                "text": "Back to Corridor 2",
+                "sceneId": "Corridor_2",
+                "targetYaw":189,
+                "targetPitch":-2,
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png"
+                 }
+              }
+            ]
+          },
+           "Dining": {
+            "title": "Dining",
+            "panorama": "image/Dining.jpg",
+            "yaw": -89,
+            "pitch":-7,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+                "pitch": -33.39,
+                "yaw": 91.22,
+                "Centre Pitch": 0,
+                "Centre Yaw": 29,
+                "type": "scene",
+                "text": "Go to Kitchen",
+                "sceneId": "Kitchen",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -32.97,
+                "yaw": -177.37,
+                "Centre Pitch": 0,
+                "Centre Yaw": 29,
+                "type": "scene",
+                "text": "Back to Corridor 3",
+                "sceneId": "Corridor_3",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png" 
+                 }
+              }
+            ]
+          },
+          "Kitchen": {
+            "title": "Kitchen",
+            "panorama": "image/Kitchen.jpg",
+            "yaw": 90,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+              "pitch":  -12.14,
+                "yaw": 157.81,
+                "Centre Pitch": -5,
+                "Centre Yaw": -5,
+                "type": "scene",
+                "text": "Back to Corridor 2",
+                "sceneId": "Corridor_2",
+                "cssClass": "hotspot_1"
+              },
+              {
+               "pitch": -37.95,
+                "yaw": -93.66,
+                "Centre Pitch": -8,
+                "Centre Yaw": 5,
+                "type": "scene",
+                "text": "Back to Dining",
+                "sceneId": "Dining",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png" 
+                 }
+              }
+            ]
+          },
+          "Lounge": {
+            "title": "Lounge",
+            "panorama": "image/Lounge.jpg",
+            "yaw": -77,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+                "pitch": -28.55,
+                "yaw": 176.34,
+                "Centre Pitch": 0,
+                "Centre Yaw": 29,
+                "type": "scene",
+                "text": "Go to Bedroom 2",
+                "sceneId": "Bedroom_2",
+                "cssClass": "hotspot_1"
+              },
+              {
+              "pitch": -36.41,
+                "yaw": -144.63,
+                "Centre Pitch": -4,
+                "Centre Yaw": -111,
+                "type": "scene",
+                "text": "Back to Corridor 3",
+                "sceneId": "Corridor_3",
+                "cssClass": "hotspot_5"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl:"NavinsLogo.png" 
+                 }
+              }
+            ]
+          },
+           "Bedroom_2": {
+            "title": "Bedroom 2",
+            "panorama": "image/Bedroom2.jpg",
+            "yaw": -5,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+               "pitch": -34.22,
+                "yaw": -107.50,
+                "Centre Pitch": -10,
+                "Centre Yaw": 10,
+                "type": "scene",
+                "text": "Back to Corrridor 3",
+                "sceneId": "Corridor_3",
+                "cssClass": "hotspot_2"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png" 
+                 }
+              }
+            ]
+          },
+          "Corridor_4": {
+            "title": "Corridor 4",
+            "panorama": "image/Path4.jpg",
+            "yaw": 81,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              {
+               "pitch": -39.24,
+                "yaw": 122.75,
+                "Centre Pitch": -7,
+                "Centre Yaw": 5,
+                "type": "scene",
+                "text": "Go to Bedroom 3",
+                "sceneId": "Bedroom_3",
+                "cssClass": "hotspot_5"
+              },
+              {
+                "pitch": -44.10,
+                "yaw": -5.86,
+                "Centre Pitch": -22,
+                "Centre Yaw": -86,
+                "type": "scene",
+                "text": "Go to Bathroom 3",
+                "sceneId": "Bathroom_3",
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -21.21,
+                "yaw": -99,
+                "Centre Pitch": -22,
+                "Centre Yaw": -86,
+                "type": "scene",
+                "text": "Back to Corridor 3",
+                "sceneId": "Corridor_3",
+                "targetYaw":87,
+                "targetPitch":-5,
+                "cssClass": "hotspot_1"
+              },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl:"NavinsLogo.png" 
+                 }
+              }
+            ]
+          },
+           "Bedroom_3": {
+            "title": "Bedroom 3",
+            "panorama": "image/Bedroom3.jpg",
+            "yaw": -79,
+            "pitch": -5,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              { "pitch": -46.59 ,"yaw": 165.77 ,"targetYaw":-91 , "targetPitch":-5, "type": "scene", "text": "Back to Corridor 4", "sceneId": "Corridor_4", "cssClass": "hotspot_2" },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png" 
+                 }
+              }
+            ]
+          },
+           "Bathroom_3": {
+            "title": "Bathroom 3",
+            "panorama": "image/Bathroom3.jpg",
+            "yaw": -5,
+            "pitch": -2,
+            "hfov": 150,
+            preload:true,
+            "hotSpots": [
+              { "pitch": -41.38 , "yaw": 179.51,"Centre Pitch":-7 , "Centre Yaw":175, "type": "scene", "text": "Back to Corridor 4", "sceneId": "Corridor_4", "cssClass": "hotspot_1" },
+              {
+                "pitch": -90,
+                "yaw": 0,
+                "type": "custom",
+                "cssClass": "company-logo-hotspot",
+                "createTooltipFunc": logoTooltip,
+                "createTooltipArgs": {
+                 imageUrl: "NavinsLogo.png" 
+                 }
+              }
+            ]
+          }
+        }
+      });
+
+      // Message in scene1//  
+viewer.on('load', function () {
+  const currentScene = viewer.getScene();
+
+  if (currentScene === 'Living_Hall' && !outdoor1InfoShown && !outdoor1InfoDismissed) {
+    document.getElementById('scene1InfoBox').style.display = 'block';
+    outdoor1InfoShown = true;
+  } else {
+    document.getElementById('scene1InfoBox').style.display = 'none';
+  }
+});
+
+// Button click handler
+function dismissInfo() {
+  document.getElementById('scene1InfoBox').style.display = 'none';
+  outdoor1InfoDismissed = true;
+}
+
+    </script>
+
+    <script>
+  document.addEventListener("fullscreenchange", () => {
+    const fsElement = document.fullscreenElement;
+    const sidebar = document.getElementById('sidebar');
+    const button = document.getElementById('toggleButton');
+
+    if (fsElement) {
+      // Move sidebar and button into the fullscreen element
+      if (!fsElement.contains(sidebar)) {
+        fsElement.appendChild(sidebar);
+      }
+      if (!fsElement.contains(button)) {
+        fsElement.appendChild(button);
+      }
+    } else {
+      // Move sidebar and button back to body when exiting fullscreen
+      document.body.appendChild(sidebar);
+      document.body.appendChild(button);
+    }
+  });
+
+  document.addEventListener("fullscreenchange", () => {
+  if (document.fullscreenElement) {
+    document.fullscreenElement.appendChild(document.querySelector(".nav-button"));
+  } else {
+    document.body.appendChild(document.querySelector(".nav-button"));
+  }
+});
+
+</script>
+
+<script>
+  function checkOrientation() {
+    const o = screen.orientation || window.orientation;
+    const overlay = document.getElementById('rotateOverlay');
+    const isLandscape = (o.type ? o.type.includes('landscape') : Math.abs(o) === 90);
+    overlay.style.display = isLandscape ? 'none' : 'flex';
+  }
+  window.addEventListener('orientationchange', checkOrientation);
+  window.addEventListener('resize', checkOrientation);
+  checkOrientation();
+</script>
+
+<script>
+  // Safari 
+  function checkOrientation() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+
+    const overlay = document.getElementById('orientationOverlay');
+    if (isLandscape) {
+      overlay.style.display = 'none';
+    } else {
+      overlay.style.display = 'flex';
+    }
+  }
+
+  window.addEventListener('orientationchange', () => {
+    setTimeout(checkOrientation, 300); // Safari needs delay
+  });
+
+  window.addEventListener('resize', () => {
+    setTimeout(checkOrientation, 300); // Safari-safe
+  });
+
+  // Initial check
+  window.addEventListener('load', () => {
+    setTimeout(checkOrientation, 300);
+  });
+</script>
+
+<script>
+
+document.getElementById('pan-up').addEventListener('click', function(e) {
+    viewer.setPitch(viewer.getPitch() + 10);
+});
+document.getElementById('pan-down').addEventListener('click', function(e) {
+    viewer.setPitch(viewer.getPitch() - 10);
+});
+document.getElementById('pan-left').addEventListener('click', function(e) {
+    viewer.setYaw(viewer.getYaw() - 10);
+});
+document.getElementById('pan-right').addEventListener('click', function(e) {
+    viewer.setYaw(viewer.getYaw() + 10);
+});
+document.getElementById('zoom-in').addEventListener('click', function(e) {
+    viewer.setHfov(viewer.getHfov() - 10);
+});
+document.getElementById('zoom-out').addEventListener('click', function(e) {
+    viewer.setHfov(viewer.getHfov() + 10);
+});
+document.getElementById('fullscreen').addEventListener('click', function(e) {
+    viewer.toggleFullscreen();
+});
+
+document.addEventListener("fullscreenchange", () => {
+    const menu = document.getElementById("scene-menu");
+    const pannellumContainer = document.querySelector(".pnlm-container");
+
+    if (document.fullscreenElement) {
+        pannellumContainer.appendChild(menu);  // Move menu into fullscreen container
+    } else {
+        document.body.appendChild(menu);       // Move it back on exit
+    }
+});
+
+</script>
+
+// Enhanced Image Preloader with Loading Screen
+    <script>
+      // Array of all panorama images
+      const panoramaImages = [
+        "image/Balcony.jpg",
+        "image/Bathroom1.jpg",
+        "image/Bathroom2.jpg",
+        "image/Bathroom3.jpg",
+        "image/Bedroom1_1.jpg",
+        "image/Bedroom1.jpg",
+        "image/Bedroom2.jpg",
+        "image/Bedroom3.jpg",
+        "image/Dining.jpg",
+        "image/Hall.jpg",
+        "image/Kitchen.jpg",
+        "image/Lounge.jpg",
+        "image/Path1.jpg",
+        "image/Path2.jpg",
+        "image/Path3.jpg",
+        "image/Path4.jpg",
+      ];
+
+      const additionalImages = [
+        "rotate.png",
+        "logo.png",
+        "NavinsLogo.png",
+        "hotspot/arrow_left_up.gif",
+        "hotspot/arrow_left.gif",
+        "hotspot/arrow_right_up.gif",
+        "hotspot/arrow_up.gif",
+      ];
+      const allImages = [...panoramaImages, ...additionalImages];
+
+      // Create loading overlay
+      function createLoadingOverlay() {
+        const overlay = document.createElement("div");
+        overlay.id = "loadingOverlay";
+        overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #0a0a0a;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100001;
+    flex-direction: column;
+    font-family: 'Poppins', sans-serif;
+  `;
+
+        const logo = document.createElement("img");
+        logo.src = "logo.png";
+        logo.alt = "Company Logo";
+        logo.style.cssText = `
+    width: 243px;
+    height: auto;
+    margin-bottom: 30px;
+    animation: breathe 2.5s ease-in-out infinite;
+  `;
+
+        // CSS animation
+        const style = document.createElement("style");
+        style.innerHTML = `
+    @keyframes breathe {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.9; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  `;
+        document.head.appendChild(style);
+
+        const loadingText = document.createElement("div");
+        loadingText.id = "loadingText";
+        loadingText.innerHTML =
+          'Loading Virtual Tour...<br><span id="loadingProgress">0%</span>';
+        loadingText.style.cssText = `
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    `;
+
+        const progressBar = document.createElement("div");
+        progressBar.style.cssText = `
+      width: 300px;
+      height: 4px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 2px;
+      overflow: hidden;
+    `;
+
+        const progressFill = document.createElement("div");
+        progressFill.id = "progressFill";
+        progressFill.style.cssText = `
+      height: 100%;
+      background: #ffd700;
+      width: 0%;
+      transition: width 0.3s ease;
+    `;
+
+        progressBar.appendChild(progressFill);
+        overlay.appendChild(logo);
+        overlay.appendChild(loadingText);
+        overlay.appendChild(progressBar);
+        document.body.appendChild(overlay);
+
+        return overlay;
+      }
+
+      // Preload function with progress
+      function preloadImages() {
+        const loadingOverlay = createLoadingOverlay();
+        let loadedCount = 0;
+        const totalImages = allImages.length;
+
+        function updateProgress() {
+          const percentage = Math.round((loadedCount / totalImages) * 100);
+          document.getElementById(
+            "loadingProgress"
+          ).textContent = `${percentage}%`;
+          document.getElementById(
+            "progressFill"
+          ).style.width = `${percentage}%`;
+
+          if (loadedCount === totalImages) {
+            setTimeout(() => {
+              loadingOverlay.remove();
+              console.log("All images preloaded successfully!");
+            }, 500);
+          }
+        }
+
+        allImages.forEach((imageSrc) => {
+          const img = new Image();
+
+          img.onload = img.onerror = function () {
+            loadedCount++;
+            updateProgress();
+          };
+
+          img.src = imageSrc;
+        });
+      }
+
+      // Start preloading when DOM is ready
+      document.addEventListener("DOMContentLoaded", preloadImages);
+    </script>
+
+  </body> 
+  </html>
